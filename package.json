@@ -1,0 +1,47 @@
+{
+  "name": "server-route-navigator",
+  "displayName": "Server Route Navigator",
+  "description": "Navigate from client API path strings to server-side handlers.",
+  "version": "0.1.0",
+  "publisher": "tigerzhang",
+  "engines": {
+    "vscode": "^1.64.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:dart",
+    "onCommand:serverRouteNavigator.goToServerHandler",
+    "onCommand:serverRouteNavigator.searchServerHandler"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "serverRouteNavigator.goToServerHandler",
+        "title": "Server Route Navigator: Go To Server Handler"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "serverRouteNavigator.goToServerHandler",
+          "when": "editorLangId == dart",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.7",
+    "typescript": "^4.8.4",
+    "vscode": "^1.1.37"
+  }
+}
