@@ -1,5 +1,7 @@
 # Server Route Navigator - VS Code Extension
 
+![Server Route Navigator](./vscode-server-route.png)
+
 This extension provides a CodeLens and command to navigate from a client API route string (e.g., `/api/purchase/verify`) to the server-side handler by searching server code for the route string.
 
 Features:
