@@ -10,8 +10,8 @@ Features:
 
 Usage:
 - Open a Dart file that refers to an API route as a string literal. A CodeLens appears above it.
-- Click "Go to server handler" to jump to the matching handler in `AI-Earphone-server` or choose from multiple matches.
+- Click "Go to server handler" to jump to the matching handler in your workspace (server project) or choose from multiple matches.
 
 Notes:
-- This extension searches for the string across server files (Rust, JS, TS, Python, Go) in `AI-Earphone-server` by default.
+- This extension searches for the string across server files (Rust, JS, TS, Python, Go) in your workspace (project) by default.
 - The search is literal string matching; it works best if the route path is a literal string in the client file.

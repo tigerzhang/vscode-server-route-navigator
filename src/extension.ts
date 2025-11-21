@@ -20,8 +20,8 @@ function outputLog(...args: any[]) {
   OUTPUT_CHANNEL.appendLine(`${new Date().toISOString()} ${msg}`);
 }
 
-// Languages and glob to search in server folder
-const SERVER_GLOB = 'AI-Earphone-server/**/*.{rs,js,ts,py,go}';
+// Languages and glob to search across the workspace (server files in project)
+const SERVER_GLOB = '**/*.{rs,js,ts,py,go}';
 
 export function activate(context: vscode.ExtensionContext) {
   outputLog('Activating serverRouteNavigator extension');
@@ -65,7 +65,12 @@ export function activate(context: vscode.ExtensionContext) {
         }
 
         const normalizedPathForLog = normalizeSearchPath(pathToSearch);
-        const matches = await findServerHandler(pathToSearch);
+        const searchingTitle = `Searching workspace for server handler for ${pathToSearch!}`;
+        // Show a transient info message and notification-style progress while searching
+        const matches = await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: searchingTitle, cancellable: false }, async (progress) => {
+          progress.report({ message: 'Searching workspace for potential matches...' });
+          return await findServerHandler(pathToSearch!);
+        });
         if (matches.length === 0) {
           vscode.window.showInformationMessage(`No server handler found for ${pathToSearch}`);
           outputLog('No server handler found', { path: normalizedPathForLog, original: pathToSearch });
@@ -228,8 +233,9 @@ async function findServerHandler(pathToSearch: string) {
     source?: string;
     meta?: any;
   }[] = [];
-  // Search common server project folders (AI-Earphone-server) and the repo root
-  const files = await vscode.workspace.findFiles(SERVER_GLOB, '**/node_modules/**', 1000);
+  // Search project workspace files (server source files in repository)
+  const exclusion = '**/{node_modules,out,.venv}/**';
+  const files = await vscode.workspace.findFiles(SERVER_GLOB, exclusion, 1000);
   debugLog('findServerHandler files found:', files.length);
 
   for (const file of files) {
