@@ -143,6 +143,13 @@ export function activate(context: vscode.ExtensionContext) {
       }
     )
   );
+
+  // Refresh codelenses when text documents change
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeTextDocument((e) => {
+      provider['onDidChangeCodeLensesEmitter'].fire();
+    })
+  );
 }
 
 export function deactivate() {}
@@ -156,11 +163,14 @@ class ServerRouteCodeLensProvider implements vscode.CodeLensProvider {
     const text = document.getText();
     const regex = new RegExp("(\\\"|\\')(/api/[^\\\"']+)(\\\"|\\')", 'g');
     let match: RegExpExecArray | null;
-    while ((match = regex.exec(text)) && !token.isCancellationRequested) {
-      const path = match[2];
-      const matchIndex = match.index;
-      const startPos = document.positionAt(matchIndex);
-      const endPos = document.positionAt(matchIndex + match[0].length);
+      while ((match = regex.exec(text)) && !token.isCancellationRequested) {
+        const path = match[2];
+        const matchIndex = match.index;
+        // match[0] = '"/api/..."' or similar; match[1] is the quote char. compute inner start/end
+        const innerStartIndex = matchIndex + (match[1] ? match[1].length : 1);
+        const innerEndIndex = innerStartIndex + path.length;
+        const startPos = document.positionAt(innerStartIndex);
+        const endPos = document.positionAt(innerEndIndex);
       const range = new vscode.Range(startPos, endPos);
 
       // Add CodeLens that calls command with path argument
